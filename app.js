@@ -813,7 +813,7 @@ function closeSubscriptEditor() {
     state.subscriptEditId = null;
     subscriptModal.classList.remove('visible');
 }
-
+subscriptModal.addEventListener('contextmenu', (e) => e.preventDefault());
 subscriptDone.addEventListener('click', closeSubscriptEditor);
 subscriptInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); closeSubscriptEditor(); }
