@@ -2,7 +2,7 @@
 
 A program for drawing syntax trees.  
   
-Ported from the original [C++ version](https://github.com/joshsellers/treesy)
+Ported from the [original C++ version](https://github.com/joshsellers/treesy).
 
 ### Usage
 
