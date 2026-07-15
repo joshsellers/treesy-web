@@ -407,3 +407,20 @@ html, body {
     #hint-bar { left: 16px; max-width: none; }
     .panel { width: calc(100vw - 36px); }
 }
+
+a.about:link {
+  color: cyan;
+}
+
+a.about:visited {
+  color: cyan;
+}
+
+a.about:hover {
+  color: blue;
+  text-decoration: underline;
+}
+
+a.about:active {
+  color: orange;
+}

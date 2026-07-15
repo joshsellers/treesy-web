@@ -813,6 +813,7 @@ function closeSubscriptEditor() {
     state.subscriptEditId = null;
     subscriptModal.classList.remove('visible');
 }
+
 subscriptModal.addEventListener('contextmenu', (e) => e.preventDefault());
 subscriptDone.addEventListener('click', closeSubscriptEditor);
 subscriptInput.addEventListener('keydown', (e) => {
@@ -1003,9 +1004,12 @@ const btnOpen = document.getElementById('btn-open');
 const btnSave = document.getElementById('btn-save');
 const btnExport = document.getElementById('btn-export');
 const btnSettings = document.getElementById('btn-settings');
+const btnAbout = document.getElementById('btn-about');
 const fileInput = document.getElementById('file-input');
 const settingsPanel = document.getElementById('settings-panel');
 const settingsClose = document.getElementById('settings-close');
+const aboutPanel = document.getElementById('about-panel');
+const aboutClose = document.getElementById('about-close');
 
 btnNew.addEventListener('click', () => {
     if (confirm('Start a new tree? This will erase the current one.')) resetTree();
@@ -1060,6 +1064,10 @@ wireColorControl('bgColor', 'bg-color', 'bg-alpha');
 wireColorControl('lineColor', 'line-color', 'line-alpha');
 wireColorControl('nonTermColor', 'nonterm-color', 'nonterm-alpha');
 wireColorControl('termColor', 'term-color', 'term-alpha');
+
+// about panel 
+btnAbout.addEventListener('click', () => aboutPanel.classList.toggle('visible'));
+aboutClose.addEventListener('click', () => aboutPanel.classList.remove('visible'));
 
 const hintDismiss = document.getElementById('hint-dismiss');
 if (hintDismiss) hintDismiss.addEventListener('click', () => hintBar.classList.add('hidden'));
