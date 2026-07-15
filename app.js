@@ -504,10 +504,27 @@ function drawNode(node, exportMode) {
     const textWidth = ctx.measureText(node.text).width;
 
     if (isArmed) {
-        const blinkRate = 24;
+        if (hiddenInput.selectionStart != hiddenInput.selectionEnd) {
+            const posStart = Math.max(0, Math.min(hiddenInput.selectionStart, node.text.length));
+            const posEnd = Math.max(0, Math.min(hiddenInput.selectionEnd, node.text.length));
+            const selectionWidth = ctx.measureText(node.text.slice(posStart, posEnd)).width;
+            const widthUntilStart = ctx.measureText(node.text.slice(0, posStart)).width;
+
+            const leftEdge = textX - textWidth / 2;
+
+            ctx.fillStyle = "#0033AA44"
+            ctx.fillRect(leftEdge + widthUntilStart, textY - fontSize * 0.5, selectionWidth, fontSize);
+        }
+
+        const blinkRate = 48;
         state._cursorTimer = (state._cursorTimer || 0) + 1;
         if (Math.floor(state._cursorTimer / blinkRate) % 2) {
-            ctx.fillText('|', textX + textWidth / 2 + fontSize * 0.25, textY);
+            const pos = Math.max(0, Math.min(hiddenInput.selectionStart, node.text.length));
+            const widthBehindCursor = ctx.measureText(node.text.slice(0, pos)).width;
+            const cursorX = (textX - textWidth / 2) + widthBehindCursor;
+
+            ctx.fillStyle = colorToCss(textColor);
+            ctx.fillText('|', cursorX + fontSize * 0.12, textY - fontSize * 0.05);
         }
     }
 
@@ -630,6 +647,7 @@ function armNode(node) {
     hiddenInput.style.display = 'block';
     hiddenInput.value = node.text;
     hiddenInput.focus();
+    hiddenInput.setSelectionRange(node.text.length, node.text.length);
     state._cursorTimer = 0;
 }
 
