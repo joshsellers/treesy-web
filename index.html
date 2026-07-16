@@ -35,33 +35,32 @@
         </div>
         <div class="panel-body">
             <div class="section-title">Colors</div>
-            <div class="field"><label>(sliders adjust transparency, click one of the color boxes to modify a color)</label></div>
+            <div class="field"><label>Click one of the color boxes below to change the colors of different parts of the tree.</label></div>
 
             <div class="color-row">
                 <label for="bg-color">Background</label>
                 <input type="color" id="bg-color">
-                <input type="range" id="bg-alpha" min="0" max="255" step="1" value="255" title="Alpha">
             </div>
             <div class="color-row">
                 <label for="line-color">Lines</label>
                 <input type="color" id="line-color">
-                <input type="range" id="line-alpha" min="0" max="255" step="1" value="255" title="Alpha">
             </div>
             <div class="color-row">
                 <label for="nonterm-color">Non-terminals</label>
                 <input type="color" id="nonterm-color">
-                <input type="range" id="nonterm-alpha" min="0" max="255" step="1" value="255" title="Alpha">
             </div>
             <div class="color-row">
                 <label for="term-color">Terminals</label>
                 <input type="color" id="term-color">
-                <input type="range" id="term-alpha" min="0" max="255" step="1" value="255" title="Alpha">
             </div>
 
             <div class="section-title">Other settings</div>
             <div class="field">
                 <label for="horz-spacing">Horizontal spacing</label>
                 <input type="range" id="horz-spacing" min="-250" max="250" step="1" value="0">
+
+                <label for="bg-color">Background transparency</label>
+                <input type="range" id="bg-alpha" min="0" max="255" step="1" value = "255" title="Alpha">
             </div>
 
             <div class="toggle-row">

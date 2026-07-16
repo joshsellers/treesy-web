@@ -1065,23 +1065,25 @@ termLinesToggle.addEventListener('change', () => {
 
 function wireColorControl(key, colorInputId, alphaInputId) {
     const colorInput = document.getElementById(colorInputId);
-    const alphaInput = document.getElementById(alphaInputId);
     colorInput.value = colorToHex(state.settings[key]);
-    alphaInput.value = state.settings[key].a;
 
     colorInput.addEventListener('input', () => {
         const { r, g, b } = hexToRgb(colorInput.value);
         state.settings[key].r = r; state.settings[key].g = g; state.settings[key].b = b;
     });
-    alphaInput.addEventListener('input', () => {
-        state.settings[key].a = parseInt(alphaInput.value, 10);
-    });
 }
 
-wireColorControl('bgColor', 'bg-color', 'bg-alpha');
-wireColorControl('lineColor', 'line-color', 'line-alpha');
-wireColorControl('nonTermColor', 'nonterm-color', 'nonterm-alpha');
-wireColorControl('termColor', 'term-color', 'term-alpha');
+wireColorControl('bgColor', 'bg-color');
+wireColorControl('lineColor', 'line-color');
+wireColorControl('nonTermColor', 'nonterm-color');
+wireColorControl('termColor', 'term-color');
+
+// wire bg alpha
+const alphaInput = document.getElementById('bg-alpha');
+alphaInput.value = state.settings['bgColor'].a;
+alphaInput.addEventListener('input', () => {
+    state.settings['bgColor'].a = parseInt(alphaInput.value, 10);
+});
 
 // about panel 
 btnAbout.addEventListener('click', () => aboutPanel.classList.toggle('visible'));
