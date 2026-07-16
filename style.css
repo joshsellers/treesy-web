@@ -131,6 +131,36 @@ html, body {
     color: var(--accent-strong);
 }
 
+.settings-btn {
+    display: center;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    background: var(--accent-soft);
+    border: none;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+    white-space: nowrap;
+}
+
+.settings-btn:hover {
+    background: var(--accent-strong);
+    color: var(--paper);
+}
+
+.settings-btn:active {
+    background: rgba(91, 142, 194, 0.3);
+}
+
+.settings-btn.primary {
+    color: var(--accent-strong);
+}
+
 .panel {
     position: absolute;
     top: 18px;

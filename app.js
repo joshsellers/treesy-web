@@ -1024,6 +1024,7 @@ const btnExport = document.getElementById('btn-export');
 const btnSettings = document.getElementById('btn-settings');
 const btnAbout = document.getElementById('btn-about');
 const fileInput = document.getElementById('file-input');
+const btnReset = document.getElementById('settings-default');
 const settingsPanel = document.getElementById('settings-panel');
 const settingsClose = document.getElementById('settings-close');
 const aboutPanel = document.getElementById('about-panel');
@@ -1059,9 +1060,12 @@ const termLinesToggle = document.getElementById('term-lines-toggle');
 horzSlider.addEventListener('input', () => {
     state.settings.horzSpacing = parseFloat(horzSlider.value);
 });
+horzSlider.addEventListener('settingsReset', () => horzSlider.value = state.settings.horzSpacing);
+
 termLinesToggle.addEventListener('change', () => {
     state.settings.showTermLines = termLinesToggle.checked;
 });
+termLinesToggle.addEventListener('settingsReset', () => termLinesToggle.checked = state.settings.showTermLines);
 
 function wireColorControl(key, colorInputId, alphaInputId) {
     const colorInput = document.getElementById(colorInputId);
@@ -1071,6 +1075,8 @@ function wireColorControl(key, colorInputId, alphaInputId) {
         const { r, g, b } = hexToRgb(colorInput.value);
         state.settings[key].r = r; state.settings[key].g = g; state.settings[key].b = b;
     });
+
+    colorInput.addEventListener('settingsReset', () => colorInput.value = colorToHex(state.settings[key]));
 }
 
 wireColorControl('bgColor', 'bg-color');
@@ -1083,6 +1089,18 @@ const alphaInput = document.getElementById('bg-alpha');
 alphaInput.value = state.settings['bgColor'].a;
 alphaInput.addEventListener('input', () => {
     state.settings['bgColor'].a = parseInt(alphaInput.value, 10);
+});
+alphaInput.addEventListener('settingsReset', () => alphaInput.value = state.settings['bgColor'].a);
+
+// default settings button
+const resetSettingsEvent = new Event('settingsReset');
+btnReset.addEventListener('click', () => {
+    state.settings = DEFAULT_SETTINGS();
+
+    const panelBody = document.querySelector('.panel-body');
+    panelBody.querySelectorAll('input').forEach(el => {
+        el.dispatchEvent(resetSettingsEvent);
+    });
 });
 
 // about panel 
