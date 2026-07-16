@@ -62,6 +62,7 @@ const state = {
     hoverNodeId: null,
     showDebug: false,
     selectedColorKey: null,
+    selectedTool: 'pointer'
 };
 
 const canvas = document.getElementById('tree-canvas');
@@ -538,7 +539,7 @@ function drawNode(node, exportMode) {
 
     connectToParent(node);
 
-    if (!exportMode && !hideInterface && (!isArmed || overNode) && !node.selectingMovement) {
+    if (!exportMode && !hideInterface && (!isArmed || overNode) && !node.selectingMovement && state.selectedTool === 'pointer') {
         drawNodeButtons(node);
     }
 
@@ -726,30 +727,29 @@ window.addEventListener('mouseup', (e) => {
 
     if (!node) return;
 
-    const ctrlKey = e.ctrlKey || e.metaKey;
     const overNode = nodeContainsWorldPoint(node, world.x, world.y);
     const buttonHit = findButtonHit(node, world.x, world.y);
     const clickingButtons = state.pressedInsideButton;
     state.pressedInsideButton = false;
 
-    if (!ctrlKey) {
-        if (buttonHit === 'plus' && overNode && e.button === 0) {
+    if (state.selectedTool !== 'movement') {
+        if (buttonHit === 'plus' && overNode && e.button === 0 && state.selectedTool === 'pointer') {
             addChildToNode(node, false);
-        } else if (buttonHit === 'leftPlus' && overNode && e.button === 0) {
+        } else if (buttonHit === 'leftPlus' && overNode && e.button === 0 && state.selectedTool === 'pointer') {
             addChildToNode(node, true);
-        } else if (buttonHit === 'minus' && node.parentId && overNode && e.button === 0) {
+        } else if (buttonHit === 'minus' && node.parentId && overNode && e.button === 0 && state.selectedTool === 'pointer') {
             deleteNode(node.id);
             return;
-        } else if (buttonHit === 'triangle' && e.button === 0) {
+        } else if (buttonHit === 'triangle' && e.button === 0 && state.selectedTool === 'pointer') {
             node.drawTriangle = !node.drawTriangle;
-        } else if (overNode && e.button === 2) {
+        } else if (overNode && state.selectedTool === 'subscript' && e.button === 0) {
             openSubscriptEditor(node);
         } else if (overNode && e.button === 0 && !clickingButtons) {
             armNode(node);
         }
     }
 
-    if (overNode && e.button === 0 && ctrlKey) {
+    if (overNode && e.button === 0 && state.selectedTool === 'movement') {
         if (!node.hasMovement) {
             node.selectingMovement = true;
             node.curveHeight = 0;
@@ -1106,6 +1106,32 @@ btnReset.addEventListener('click', () => {
 // about panel 
 btnAbout.addEventListener('click', () => aboutPanel.classList.toggle('visible'));
 aboutClose.addEventListener('click', () => aboutPanel.classList.remove('visible'));
+
+// wire tool buttons
+function modifyProperty(id, from, to) {
+    document.getElementById(id).style.setProperty(from, window.getComputedStyle(document.body).getPropertyValue(to));
+}
+
+const buttonIds = ['btn-pointer', 'btn-subscript', 'btn-movement'];
+for (const id of buttonIds) {
+    const button = document.getElementById(id);
+    button.addEventListener('click', () => {
+        state.selectedTool = id.split('-')[1];
+
+        modifyProperty(id, '--panel', '--accent');
+        modifyProperty(id, '--muted', '--paper');
+        for (const otherId of buttonIds) {
+            if (otherId !== id) {
+                modifyProperty(otherId, '--panel', '--panel');
+                modifyProperty(otherId, '--muted', '--muted');
+            }
+        }
+    });
+}
+
+modifyProperty('btn-pointer', '--panel', '--accent');
+modifyProperty('btn-pointer', '--muted', '--paper');
+
 
 const hintDismiss = document.getElementById('hint-dismiss');
 if (hintDismiss) hintDismiss.addEventListener('click', () => hintBar.classList.add('hidden'));

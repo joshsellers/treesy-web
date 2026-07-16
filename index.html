@@ -26,6 +26,13 @@
         <button class="toolbar-btn" id="btn-about" title="About"><span class="txt">About</span></button>
     </div>
 
+    <div id="toolkit">
+        <a class="title">Tools</a>
+        <button class="toolkit-btn" id="btn-pointer"><img class="glyph" src="tool icons/pointer.png">Editor</button>
+        <button class="toolkit-btn" id="btn-subscript"><img class="glyph" src="tool icons/subscript.png">Subscript tool</button>
+        <button class="toolkit-btn" id="btn-movement"><img class="glyph" src="tool icons/movement.png">Movement arrow tool</button>
+    </div>
+
     <input type="file" id="file-input" accept=".treesy,text/plain" style="display:none">
 
     <div class="panel" id="settings-panel">
@@ -102,15 +109,14 @@
         <b><i>Basic controls:</i></b><br>
         <b>&middot; </b><b>Click and Drag</b> in empty space to pan<br> 
         <b>&middot; </b><b>Scroll</b> to zoom in or out<br>
-        <b>&middot; </b><b>Click</b> a node to edit its text<br>
-        <b>&middot; </b><b>Right-click</b> a node to add a subscript<br>
-        <b>&middot; </b><b>Hover</b> over a node for buttons for adding children, deleting a node, and drawing triangles<br><br>
+        <b>&middot; </b><b>Click</b> a node to using the <b>Editor</b> tool to edit its text<br>
+        <b>&middot; </b><b>Hover</b> over a node while using the <b>Editor</b> tool for buttons for adding children, deleting a node, and drawing triangles<br>
+        <b>&middot; </b><b>Click</b> a node while using the <b>Subscript</b> tool to add a subscript to a node<br><br>
 
-        <b><i>Movement arrows:</i></b><br>
-        <b>&middot; </b><b>Ctrl/Command+click</b> a node to start drawing a movement arrow, then <b>click</b> a different node to finish drawing the arrow<br>
-        <b>&middot; </b><b>Ctrl/Command+scroll</b> changes the arrow's height and <b>alt/option+scroll</b> changes its angle<br>
-        <b>&middot; </b>To remove an arrow, <b>Ctrl/Command+click</b> the node where the arrow starts<br>
-        <b>&middot; </b>To cancel an arrow while drawing it, just click anywhere in the background<br>
+        <b><i>Movement:</i></b><br>
+        <b>&middot; </b>While using the <b>Movement Arrow</b> tool, <b>click</b> on a node to begin drawing an arrow, then click a different node to finish drawing the arrow<br>
+        <b>&middot; </b>When drawing an arrow, you can use the <b>mouse wheel</b> while holding <b>Ctrl/Command</b> to change the arrow's height, or while holding <b>Alt/Option</b> to change its angle<br>
+        <b>&middot; </b>To remove an arrow, use the <b>Movement Arrow</b> tool to click on the node where an arrow begins<br>
     </div>
 </div>
 

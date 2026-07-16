@@ -71,6 +71,62 @@ html, body {
     z-index: 20;
 }
 
+#toolkit {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 10px 30px rgba(10, 14, 20, 0.35);
+    z-index: 20;
+}
+
+#toolkit .title {
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    white-space: nowrap;
+}
+
+#toolkit .glyph {
+    width: 22px;
+    height: 22px;
+}
+
+.toolkit-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    background: var(--panel);
+    border: none;
+    border-radius: 8px;
+    padding: 9px 8px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+    white-space: nowrap;
+}
+
+.toolkit-btn:hover {
+    background: var(--accent-soft);
+    color: var(--paper);
+}
+
+.toolkit-btn:active {
+    background: rgba(91, 142, 194, 0.3);
+}
+
 #wordmark {
     display: flex;
     align-items: center;
@@ -155,10 +211,6 @@ html, body {
 
 .settings-btn:active {
     background: rgba(91, 142, 194, 0.3);
-}
-
-.settings-btn.primary {
-    color: var(--accent-strong);
 }
 
 .panel {
