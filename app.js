@@ -46,6 +46,10 @@ function generateUID() {
     return 'n' + Date.now().toString(36) + '_' + (uidCounter).toString(36);
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const state = {
     nodes: new Map(),
     rootId: null,
@@ -62,7 +66,9 @@ const state = {
     hoverNodeId: null,
     showDebug: false,
     selectedColorKey: null,
-    selectedTool: 'pointer'
+    selectedTool: 'pointer',
+    treeTitle: 'NewTree',
+    titleModalOpen: false
 };
 
 const canvas = document.getElementById('tree-canvas');
@@ -185,7 +191,6 @@ function deleteNode(id) {
     if (state.activePressNodeId === id) state.activePressNodeId = null;
     if (state.hoverNodeId === id) state.hoverNodeId = null;
 
-    // clear any dangling movement references
     for (const n of state.nodes.values()) {
         if (n.endPointId === id) { n.hasMovement = false; n.endPointId = null; }
     }
@@ -203,6 +208,7 @@ function resetTree() {
     state.hoverNodeId = null;
     const root = createNode(null, 50, 50);
     state.rootId = root.id;
+    state.treeTitle = 'NewTree';
 }
 
 function alignNode(node) {
@@ -845,6 +851,32 @@ subscriptInput.addEventListener('input', () => {
     }
 });
 
+const titleModal = document.getElementById('title-modal');
+const titleInput = document.getElementById('title-input');
+const titleDone = document.getElementById('title-done');
+
+function openTitleModal() {
+    disarmCurrent();
+    titleInput.value = state.treeTitle;
+    titleModal.classList.add('visible');
+    titleInput.focus();
+    titleInput.select();
+    state.titleModalOpen = true;
+}
+
+function closeTitleModal() {
+    state.treeTitle = titleInput.value;
+    titleModal.classList.remove('visible');
+    state.titleModalOpen = false;
+}
+
+titleModal.addEventListener('contextmenu', (e) => e.preventDefault());
+titleDone.addEventListener('click', closeTitleModal);
+titleInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); closeTitleModal(); }
+    e.stopPropagation();
+});
+
 const VERSION = '1.0';
 
 function serializeTree() {
@@ -1009,7 +1041,8 @@ function exportPNG() {
     off.toBlob(blob => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = 'treesy-export.png';
+        a.href = url; 
+        a.download = state.treeTitle + '.png';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1032,6 +1065,7 @@ const aboutClose = document.getElementById('about-close');
 
 btnNew.addEventListener('click', () => {
     if (confirm('Start a new tree? This will erase the current one.')) resetTree();
+    openTitleModal();
 });
 
 btnOpen.addEventListener('click', () => fileInput.click());
@@ -1042,13 +1076,26 @@ fileInput.addEventListener('change', () => {
     reader.onload = () => deserializeTree(String(reader.result));
     reader.readAsText(file);
     fileInput.value = '';
+
+    const fileName = file.name.split('.')[0];
+    if (fileName) state.treeTitle = fileName;
 });
 
-btnSave.addEventListener('click', () => {
-    downloadTextFile('tree.treesy', serializeTree());
+btnSave.addEventListener('click', async () => {
+    if (state.treeTitle === 'NewTree') {
+        openTitleModal();
+        while (state.titleModalOpen) await sleep(100);
+    }
+    downloadTextFile(state.treeTitle + '.treesy', serializeTree());
 });
 
-btnExport.addEventListener('click', exportPNG);
+btnExport.addEventListener('click', async () => {
+    if (state.treeTitle === 'NewTree') {
+        openTitleModal();
+        while (state.titleModalOpen) await sleep(100);
+    }
+    exportPNG();
+});
 
 btnSettings.addEventListener('click', () => {
     settingsPanel.classList.toggle('visible');
