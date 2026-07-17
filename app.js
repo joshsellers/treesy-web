@@ -68,7 +68,9 @@ const state = {
     selectedColorKey: null,
     selectedTool: 'pointer',
     treeTitle: 'NewTree',
-    titleModalOpen: false
+    titleModalOpen: false,
+    confirmationModalOpen: false,
+    confirmationModalReturnValue: null
 };
 
 const canvas = document.getElementById('tree-canvas');
@@ -877,6 +879,33 @@ titleInput.addEventListener('keydown', (e) => {
     e.stopPropagation();
 });
 
+const confirmationModal = document.getElementById('confirmation-modal');
+const confirmationTitle = document.getElementById('confirmation-title');
+const confirmationOkBtn = document.getElementById('confirmation-ok');
+const confirmationCancelBtn = document.getElementById('confirmation-cancel');
+
+function openConfirmationModal(title) {
+    state.confirmationModalReturnValue = null;
+    confirmationTitle.innerHTML = title;
+    confirmationModal.classList.add('visible');
+    state.confirmationModalOpen = true;
+}
+
+function closeConfirmationModal() {
+    state.confirmationModalOpen = false;
+    confirmationModal.classList.remove('visible');
+}
+
+confirmationModal.addEventListener('contextmenu', (e) => e.preventDefault());
+confirmationOkBtn.addEventListener('click', () => {
+    state.confirmationModalReturnValue = 'ok';
+    closeConfirmationModal();
+});
+confirmationCancelBtn.addEventListener('click', () => {
+    state.confirmationModalReturnValue = 'cancel';
+    closeConfirmationModal();
+});
+
 const VERSION = '1.0';
 
 function serializeTree() {
@@ -1063,9 +1092,14 @@ const settingsClose = document.getElementById('settings-close');
 const aboutPanel = document.getElementById('about-panel');
 const aboutClose = document.getElementById('about-close');
 
-btnNew.addEventListener('click', () => {
-    if (confirm('Start a new tree? This will erase the current one.')) resetTree();
-    openTitleModal();
+btnNew.addEventListener('click', async () => {
+    openConfirmationModal('Start a new tree? This will erase the current one.');
+    while (state.confirmationModalOpen) await sleep(100);
+
+    if (state.confirmationModalReturnValue === 'ok') {
+        resetTree();
+        openTitleModal();
+    }
 });
 
 btnOpen.addEventListener('click', () => fileInput.click());
