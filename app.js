@@ -1050,7 +1050,10 @@ btnSave.addEventListener('click', () => {
 
 btnExport.addEventListener('click', exportPNG);
 
-btnSettings.addEventListener('click', () => settingsPanel.classList.toggle('visible'));
+btnSettings.addEventListener('click', () => {
+    settingsPanel.classList.toggle('visible');
+    aboutPanel.classList.remove('visible');
+});
 settingsClose.addEventListener('click', () => settingsPanel.classList.remove('visible'));
 
 // settings controls
@@ -1104,7 +1107,10 @@ btnReset.addEventListener('click', () => {
 });
 
 // about panel 
-btnAbout.addEventListener('click', () => aboutPanel.classList.toggle('visible'));
+btnAbout.addEventListener('click', () => {
+    aboutPanel.classList.toggle('visible');
+    settingsPanel.classList.remove('visible');
+});
 aboutClose.addEventListener('click', () => aboutPanel.classList.remove('visible'));
 
 // wire tool buttons
