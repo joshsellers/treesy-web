@@ -401,13 +401,17 @@ html, body {
     padding: 18px;
     width: 220px;
     z-index: 40;
-    display: none;
+    display: flex;
     flex-direction: column;
     gap: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s;
 }
 
 #subscript-modal.visible {
-    display: flex;
+    pointer-events: auto;
+    opacity: 1;
 }
 
 #subscript-modal h3 {
@@ -464,13 +468,17 @@ html, body {
     padding: 18px;
     width: 220px;
     z-index: 40;
-    display: none;
+    display: flex;
     flex-direction: column;
     gap: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s;
 }
 
 #title-modal.visible {
-    display: flex;
+    pointer-events: auto;
+    opacity: 1;
 }
 
 #title-modal h3 {
@@ -516,6 +524,7 @@ html, body {
 }
 
 #confirmation-modal {
+    display: flex;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -527,13 +536,16 @@ html, body {
     padding: 18px;
     width: 220px;
     z-index: 40;
-    display: none;
     flex-direction: column;
     gap: 12px;
+    opacity: 0;
+    transition: opacity 0.18s;
+    pointer-events: none;
 }
 
 #confirmation-modal.visible {
-    display: flex;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 #confirmation-title {
@@ -592,6 +604,10 @@ html, body {
     line-height: 1.55;
     z-index: 20;
     box-shadow: 0 10px 30px rgba(10, 14, 20, 0.3);
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+    transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 
@@ -599,7 +615,11 @@ html, body {
     border-bottom: 1px solid var(--panel-border);
 }
 
-#hint-bar.hidden { display: none; }
+#hint-bar.hidden {
+    transform: translateX(120%);
+    opacity: 0;
+    pointer-events: none;
+}
 
 #hint-bar b { color: var(--paper); }
 
