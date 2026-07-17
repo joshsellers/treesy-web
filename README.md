@@ -1,6 +1,6 @@
 # Treesy
 
-A program for drawing syntax trees.  
+A webpage for drawing syntax trees.  
   
 Ported from the [original C++ version](https://github.com/joshsellers/treesy).
 
