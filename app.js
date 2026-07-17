@@ -657,6 +657,7 @@ function armNode(node) {
     hiddenInput.value = node.text;
     hiddenInput.focus();
     hiddenInput.setSelectionRange(node.text.length, node.text.length);
+    if (node.text === 'XP') hiddenInput.select();
     state._cursorTimer = 0;
 }
 
