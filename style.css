@@ -467,6 +467,11 @@ html, body {
     box-shadow: 0 10px 30px rgba(10, 14, 20, 0.3);
 }
 
+
+#hint-bar .hint-header {
+    border-bottom: 1px solid var(--panel-border);
+}
+
 #hint-bar.hidden { display: none; }
 
 #hint-bar b { color: var(--paper); }
@@ -477,11 +482,25 @@ html, body {
     border: none;
     color: var(--muted);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 18px;
     margin-left: 8px;
+    padding: 4px 6px;
+    border-radius: 6px;
 }
 
-#hint-bar .hint-close:hover { color: var(--paper); }
+#hint-bar .hint-close:hover {
+    color: var(--paper);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#hint-bar h2 {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
 
 @media (max-width: 640px) {
     #wordmark .label { display: none; }
