@@ -211,6 +211,9 @@ function resetTree() {
     const root = createNode(null, 50, 50);
     state.rootId = root.id;
     state.treeTitle = 'NewTree';
+    state.camera.scale = canvas.clientWidth / WORLD_W;
+    state.camera.x = WORLD_W / 2;
+    state.camera.y = pctH(68);
 }
 
 function alignNode(node) {
@@ -1026,6 +1029,9 @@ function resetTreeEmpty() {
     state.activePressNodeId = null;
     state.hoverNodeId = null;
     state.rootId = null;
+    state.camera.scale = canvas.clientWidth / WORLD_W;
+    state.camera.x = WORLD_W / 2;
+    state.camera.y = pctH(68);
 }
 
 function downloadTextFile(filename, content) {
