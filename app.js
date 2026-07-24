@@ -261,7 +261,7 @@ function updateNode(node) {
         if (dist <= pctH(state.settings.nontermVerticalDistance)) {
             if (hasChildren(node) || parent.children.length > 1 || hasSubscript(node) ||
                 node.drawTriangle || state.settings.showTermLines) {
-                moveNode(node, 0, pctH(getTermDistance(state.settings)));
+                moveNode(node, 0, pctH(state.settings.termVerticalDistance));
             }
         } else if (dist >= pctH(state.settings.nontermVerticalDistance) && !state.settings.showTermLines) {
             if (!hasChildren(node) && parent.children.length === 1 && !hasSubscript(node) && !node.drawTriangle) {
