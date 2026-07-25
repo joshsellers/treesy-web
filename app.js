@@ -70,7 +70,8 @@ const state = {
     treeTitle: 'NewTree',
     titleModalOpen: false,
     confirmationModalOpen: false,
-    confirmationModalReturnValue: null
+    confirmationModalReturnValue: null,
+    selectedArrowType: 'angle'
 };
 
 const canvas = document.getElementById('tree-canvas');
@@ -143,6 +144,7 @@ function createNode(parentId, xPct, yPct, id) {
         movementLineVertex: pos.y + size.height,
         hovered: false,
         armed: false,
+        arrowType: 'curve'
     };
 
     state.nodes.set(nodeId, node);
@@ -402,7 +404,27 @@ function drawNodeButtons(node) {
     node._buttons = { plus, leftPlus, minus, triangle, btnSize };
 }
 
-function drawMovementLine(node) {
+function drawArrowHead(arrowSize, flair, angle, point) {
+    const verts = [
+        { x: -arrowSize / 2, y: flair },
+        { x: 0, y: -arrowSize },
+        { x: arrowSize / 2, y: flair },
+        { x: 0, y: 0 },
+    ];
+    ctx.save();
+    ctx.beginPath();
+    verts.forEach((v, i) => {
+        const rx = v.x * Math.cos(angle) - v.y * Math.sin(angle) + point.x;
+        const ry = v.x * Math.sin(angle) + v.y * Math.cos(angle) + point.y;
+        if (i === 0) ctx.moveTo(rx, ry); else ctx.lineTo(rx, ry);
+    });
+    ctx.closePath();
+    ctx.fillStyle = colorToCss(state.settings.lineColor);
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawCurvedArrow(node) {
     const p0 = {
         x: node.pos.x + node.size.width / 2,
         y: node.pos.y + node.size.height + pctH(0.5),
@@ -445,23 +467,51 @@ function drawMovementLine(node) {
 
     const angle = Math.atan2(lastA.y - lastB.y, lastA.x - lastB.x) + (270 * Math.PI / 180);
     const arrowSize = 20, flair = 4;
-    const verts = [
-        { x: -arrowSize / 2, y: flair },
-        { x: 0, y: -arrowSize },
-        { x: arrowSize / 2, y: flair },
-        { x: 0, y: 0 },
-    ];
-    ctx.save();
-    ctx.beginPath();
-    verts.forEach((v, i) => {
-        const rx = v.x * Math.cos(angle) - v.y * Math.sin(angle) + p1.x;
-        const ry = v.x * Math.sin(angle) + v.y * Math.cos(angle) + p1.y;
-        if (i === 0) ctx.moveTo(rx, ry); else ctx.lineTo(rx, ry);
-    });
-    ctx.closePath();
-    ctx.fillStyle = colorToCss(state.settings.lineColor);
-    ctx.fill();
-    ctx.restore();
+    drawArrowHead(arrowSize, flair, angle, p1);
+}
+
+function drawAngledArrow(node) {
+    const endNode = getNode(node.endPointId);
+    const usingEndpoint = (node.hasMovement || endNode);
+    const mouse = state.worldMouse || { x: node.pos.x, y: node.pos.y };
+    const p1 = usingEndpoint && endNode ? {
+        x: endNode.pos.x + endNode.size.width / 2,
+        y: endNode.pos.y + endNode.size.height + pctH(0.5),
+    } : {
+        x: mouse.x + pct(0.5),
+        y: mouse.y + pctH(2),
+    };
+
+    const p0 = {
+        x: p1.x < node.pos.x + node.size.width / 2 ? node.pos.x : node.pos.x + node.size.width,
+        y: node.pos.y + node.size.height / 2 + node.curveHeight,
+    };
+
+    drawLine(p0, { x: p1.x, y: p0.y }, 4, state.settings.lineColor);
+    drawLine({ x: p1.x, y: p0.y }, p1, 4, state.settings.lineColor);
+    if (node.curveHeight != 0) {
+        drawLine(
+            { x: node.pos.x + node.size.width / 2, y: node.pos.y + node.size.height }, 
+            { x: node.pos.x + node.size.width / 2, y: p0.y },
+            4,
+            state.settings.lineColor
+        );
+        drawLine(
+            { x: node.pos.x + node.size.width / 2, y: p0.y },
+            p0, 4, state.settings.lineColor
+        );
+    }
+
+    const arrowSize = 20, flair = 4;
+    drawArrowHead(arrowSize, flair, 0, p1);
+}
+
+function drawMovementLine(node) {
+    if (node.arrowType.startsWith('curve')) {
+        drawCurvedArrow(node);
+    } else if (node.arrowType.startsWith('angle')) {
+        drawAngledArrow(node);
+    }
 }
 
 function drawNode(node, exportMode) {
@@ -766,6 +816,7 @@ window.addEventListener('mouseup', (e) => {
             node.selectingMovement = true;
             node.curveHeight = 0;
             node.curveAngle = 0;
+            node.arrowType = state.selectedArrowType;
         } else {
             node.hasMovement = false;
             node.endPointId = null;
