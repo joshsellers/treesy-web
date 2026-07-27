@@ -508,7 +508,7 @@ function drawAngledArrow(node) {
 
     const p0 = {
         x: p1.x < node.pos.x + node.size.width / 2 ? node.pos.x : node.pos.x + node.size.width,
-        y: node.pos.y + node.size.height / 2 + node.curveHeight,
+        y: node.pos.y + node.size.height / 2 + -node.curveHeight,
     };
 
     const dashed = node.arrowType === 'angle-dash';
@@ -897,6 +897,34 @@ hiddenInput.addEventListener('keydown', (e) => {
 
 window.addEventListener('keydown', (e) => {
     if (e.key === 'F3') { state.showDebug = !state.showDebug; }
+});
+
+function swapArrowStyle(next) {
+    const styles = ['curve', 'curve-dash', 'angle', 'angle-dash'];
+    let currentIndex = 0;
+    for (let i = 0; i < styles.length; i++) {
+        if (state.selectedArrowType === styles[i]) {
+            currentIndex = i;
+            break;
+        }
+    }
+
+    if (next && currentIndex < styles.length - 1) state.selectedArrowType = styles[currentIndex + 1];
+    else if (next) state.selectedArrowType = styles[0];
+    else if (!next && currentIndex > 0) state.selectedArrowType = styles[currentIndex - 1];
+    else if (!next) state.selectedArrowType = styles[styles.length - 1];
+
+    const nodeList = [...state.nodes.values()];
+    for (const node of nodeList) {
+        if (node.selectingMovement) {
+            node.arrowType = state.selectedArrowType;
+            break;
+        }
+    }
+}
+
+window.addEventListener('keyup', (e) => {
+    if (e.key.startsWith('Arrow')) swapArrowStyle(e.key === 'ArrowDown' || e.key === 'ArrowRight');
 });
 
 const subscriptModal = document.getElementById('subscript-modal');
