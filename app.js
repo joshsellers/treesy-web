@@ -924,7 +924,7 @@ function swapArrowStyle(next) {
 }
 
 window.addEventListener('keyup', (e) => {
-    if (e.key.startsWith('Arrow')) swapArrowStyle(e.key === 'ArrowDown' || e.key === 'ArrowRight');
+    if (state.selectedTool === 'movement' && e.key.startsWith('Arrow')) swapArrowStyle(e.key === 'ArrowDown' || e.key === 'ArrowRight');
 });
 
 const subscriptModal = document.getElementById('subscript-modal');
