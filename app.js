@@ -71,7 +71,7 @@ const state = {
     titleModalOpen: false,
     confirmationModalOpen: false,
     confirmationModalReturnValue: null,
-    selectedArrowType: 'angle'
+    selectedArrowType: 'curve'
 };
 
 const canvas = document.getElementById('tree-canvas');
@@ -305,7 +305,12 @@ function nodeContainsWorldPoint(node, wx, wy) {
         wy >= node.pos.y && wy <= node.pos.y + node.size.height;
 }
 
-function drawLine(p1, p2, thickness, color) {
+function drawLine(p1, p2, thickness, color, dashed = false) {
+    if (dashed) {
+        drawDashedLine(p1, p2, thickness, color);
+        return;
+    }
+
     const dx = p2.x - p1.x, dy = p2.y - p1.y;
     const len = Math.sqrt(dx * dx + dy * dy) || 1;
     const ux = dx / len, uy = dy / len;
@@ -319,6 +324,24 @@ function drawLine(p1, p2, thickness, color) {
     ctx.closePath();
     ctx.fillStyle = colorToCss(color);
     ctx.fill();
+}
+
+function drawDashedLine(p1, p2, thickness, color) {
+    const sublineLength = pct(0.25);
+    const dx = p2.x - p1.x, dy = p2.y - p1.y;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const numSublines = len / sublineLength;
+
+    const theta = Math.atan2(dy, dx);
+
+    let lastPoint = p1;
+    for (let i = 0; i < numSublines; i++) {
+        const endPoint = { x: lastPoint.x + sublineLength * Math.cos(theta), y: lastPoint.y + sublineLength * Math.sin(theta) };
+        if (p2.x > p1.x && endPoint.x > p2.x || p2.x < p1.x && endPoint.x < p2.x 
+            || p2.y > p1.y && endPoint.y > p2.y || p2.y < p1.y && endPoint.y < p2.y) continue;
+        if (i & 1) drawLine(lastPoint, endPoint, thickness, color);
+        lastPoint = endPoint;
+    }
 }
 
 function connectToParent(node) {
@@ -455,13 +478,14 @@ function drawCurvedArrow(node) {
         };
     };
 
-    const segments = 20;
+    const dashed = node.arrowType === 'curve-dash';
+    const segments = dashed ? 200 : 20;
     let lastA = null, lastB = null;
     for (let i = 0; i < segments; i++) {
         const t0 = i / segments, t1 = (i + 1) / segments;
         const a = bez(t0), b = bez(t1);
         node.movementLineVertex = Math.max(node.movementLineVertex, Math.max(a.y, b.y));
-        drawLine(a, b, 4, state.settings.lineColor);
+        if (i & 1 || !dashed) drawLine(a, b, 4, state.settings.lineColor);
         lastA = a; lastB = b;
     }
 
@@ -487,18 +511,20 @@ function drawAngledArrow(node) {
         y: node.pos.y + node.size.height / 2 + node.curveHeight,
     };
 
-    drawLine(p0, { x: p1.x, y: p0.y }, 4, state.settings.lineColor);
-    drawLine({ x: p1.x, y: p0.y }, p1, 4, state.settings.lineColor);
+    const dashed = node.arrowType === 'angle-dash';
+
+    drawLine(p0, { x: p1.x, y: p0.y }, 4, state.settings.lineColor, dashed);
+    drawLine({ x: p1.x, y: p0.y }, p1, 4, state.settings.lineColor, dashed);
     if (node.curveHeight != 0) {
         drawLine(
             { x: node.pos.x + node.size.width / 2, y: node.pos.y + node.size.height }, 
             { x: node.pos.x + node.size.width / 2, y: p0.y },
             4,
-            state.settings.lineColor
+            state.settings.lineColor, dashed
         );
         drawLine(
             { x: node.pos.x + node.size.width / 2, y: p0.y },
-            p0, 4, state.settings.lineColor
+            p0, 4, state.settings.lineColor, dashed
         );
     }
 
