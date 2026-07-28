@@ -144,7 +144,8 @@ function createNode(parentId, xPct, yPct, id) {
         movementLineVertex: pos.y + size.height,
         hovered: false,
         armed: false,
-        arrowType: 'curve'
+        arrowType: 'curve',
+        arrowAnchorPoint: 'bottom'
     };
 
     state.nodes.set(nodeId, node);
@@ -456,9 +457,19 @@ function drawCurvedArrow(node) {
     const endNode = getNode(node.endPointId);
     const usingEndpoint = (node.hasMovement || endNode);
     const mouse = state.worldMouse || { x: node.pos.x, y: node.pos.y };
-    const p1 = usingEndpoint && endNode ? {
+    const p1 = usingEndpoint && endNode ? 
+    node.arrowAnchorPoint === 'bottom' ?
+    {
         x: endNode.pos.x + endNode.size.width / 2,
         y: endNode.pos.y + endNode.size.height + pctH(0.5),
+    } : 
+    node.arrowAnchorPoint === 'left' ?
+    {
+        x: endNode.pos.x,
+        y: endNode.pos.y + endNode.size.height / 2
+    } : {
+        x: endNode.pos.x + endNode.size.width,
+        y: endNode.pos.y + endNode.size.height / 2
     } : {
         x: mouse.x + pct(0.5),
         y: mouse.y + pctH(2),
@@ -498,9 +509,19 @@ function drawAngledArrow(node) {
     const endNode = getNode(node.endPointId);
     const usingEndpoint = (node.hasMovement || endNode);
     const mouse = state.worldMouse || { x: node.pos.x, y: node.pos.y };
-    const p1 = usingEndpoint && endNode ? {
+    const p1 = usingEndpoint && endNode ? 
+    node.arrowAnchorPoint === 'bottom' ?
+    {
         x: endNode.pos.x + endNode.size.width / 2,
         y: endNode.pos.y + endNode.size.height + pctH(0.5),
+    } : 
+    node.arrowAnchorPoint === 'left' ?
+    {
+        x: endNode.pos.x,
+        y: endNode.pos.y + endNode.size.height / 2
+    } : {
+        x: endNode.pos.x + endNode.size.width,
+        y: endNode.pos.y + endNode.size.height / 2
     } : {
         x: mouse.x + pct(0.5),
         y: mouse.y + pctH(2),
@@ -513,8 +534,19 @@ function drawAngledArrow(node) {
 
     const dashed = node.arrowType === 'angle-dash';
 
-    drawLine(p0, { x: p1.x, y: p0.y }, 4, state.settings.lineColor, dashed);
-    drawLine({ x: p1.x, y: p0.y }, p1, 4, state.settings.lineColor, dashed);
+    let horzOffset = 0;
+    if (node.arrowAnchorPoint === 'left' && p0.y != p1.y) {
+        horzOffset = -pct(0.5) + node.curveAngle * 100;
+    } else if (node.arrowAnchorPoint === 'right' && p0.y != p1.y) {
+        horzOffset = pct(0.5) + node.curveAngle * 100;
+    } else node.curveAngle = 0;
+
+    drawLine(p0, { x: p1.x + horzOffset, y: p0.y }, 4, state.settings.lineColor, dashed);
+    drawLine({ x: p1.x + horzOffset, y: p0.y }, { x: p1.x + horzOffset, y: p1.y }, 4, state.settings.lineColor, dashed);
+    if (horzOffset != 0) {
+        drawLine({ x: p1.x + horzOffset, y: p1.y }, p1, 4, state.settings.lineColor, dashed);
+    }
+
     if (node.curveHeight != 0) {
         drawLine(
             { x: node.pos.x + node.size.width / 2, y: node.pos.y + node.size.height }, 
@@ -529,7 +561,9 @@ function drawAngledArrow(node) {
     }
 
     const arrowSize = 20, flair = 4;
-    drawArrowHead(arrowSize, flair, 0, p1);
+    const angle = node.arrowAnchorPoint === 'left' ? 90 : node.arrowAnchorPoint === 'right' ? 270 : 
+    p1.y > p0.y ? 180 : 0;
+    drawArrowHead(arrowSize, flair, angle * Math.PI / 180, p1);
 }
 
 function drawMovementLine(node) {
@@ -782,6 +816,14 @@ window.addEventListener('mousemove', (e) => {
         if (n.selectingMovement) {
             const under = findTopNodeAt(world.x, world.y);
             n.endPointId = (under && under.id !== n.id) ? under.id : null;
+            if (n.endPointId) {
+                const selectionPadding = pct(1.2);
+                if (world.x < under.pos.x + under.size.width / 2 - selectionPadding) {
+                    n.arrowAnchorPoint = 'left';
+                } else if (world.x > under.pos.x + under.size.width / 2 + selectionPadding) {
+                    n.arrowAnchorPoint = 'right';
+                } else n.arrowAnchorPoint = 'bottom';
+            } else n.arrowAnchorPoint = 'bottom';
         }
     }
 });
@@ -1034,6 +1076,7 @@ function serializeTree() {
         lines.push('curveHeight: ' + node.curveHeight);
         lines.push('triangle: ' + (node.drawTriangle ? 'true' : 'false'));
         lines.push('arrowStyle: ' + node.arrowType);
+        lines.push('arrowAnchorPoint: ' + node.arrowAnchorPoint);
         lines.push('}');
     }
     return lines.join('\n');
@@ -1083,7 +1126,8 @@ function deserializeTree(text) {
         node.curveAngle = rec.curveAngle !== undefined ? parseFloat(rec.curveAngle) : 0;
         node.curveHeight = rec.curveHeight !== undefined ? parseFloat(rec.curveHeight) : 0;
         node.drawTriangle = rec.triangle === 'true';
-        node.arrowType = rec.arrowStyle;
+        node.arrowType = rec.arrowStyle ? rec.arrowStyle : 'curve';
+        node.arrowAnchorPoint = rec.arrowAnchorPoint ? rec.arrowAnchorPoint : 'bottom';
         createdIds.add(rec.id);
 
         if (rec.children) {
