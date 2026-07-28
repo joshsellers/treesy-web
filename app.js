@@ -1015,7 +1015,7 @@ confirmationCancelBtn.addEventListener('click', () => {
     closeConfirmationModal();
 });
 
-const VERSION = '1.0';
+const VERSION = '1.1';
 
 function serializeTree() {
     const lines = [];
@@ -1033,6 +1033,7 @@ function serializeTree() {
         lines.push('curveAngle: ' + node.curveAngle);
         lines.push('curveHeight: ' + node.curveHeight);
         lines.push('triangle: ' + (node.drawTriangle ? 'true' : 'false'));
+        lines.push('arrowStyle: ' + node.arrowType);
         lines.push('}');
     }
     return lines.join('\n');
@@ -1082,6 +1083,7 @@ function deserializeTree(text) {
         node.curveAngle = rec.curveAngle !== undefined ? parseFloat(rec.curveAngle) : 0;
         node.curveHeight = rec.curveHeight !== undefined ? parseFloat(rec.curveHeight) : 0;
         node.drawTriangle = rec.triangle === 'true';
+        node.arrowType = rec.arrowStyle;
         createdIds.add(rec.id);
 
         if (rec.children) {
